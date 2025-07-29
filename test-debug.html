@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Debug Panel - Wedding Payment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        .debug-panel {
+            background: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .debug-title {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .log-entry {
+            background: #1a1a1a;
+            border-left: 3px solid #00ff00;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .log-error {
+            border-left-color: #ff4757;
+            color: #ff4757;
+        }
+        .log-warning {
+            border-left-color: #ffa502;
+            color: #ffa502;
+        }
+        .log-success {
+            border-left-color: #2ed573;
+            color: #2ed573;
+        }
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .test-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .test-btn:hover {
+            background: #357abd;
+            transform: translateY(-2px);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .stat-card {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Wedding Payment Test Debug Panel</h1>
+    
+    <div class="debug-panel">
+        <div class="debug-title">📊 Test İstatistikleri</div>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTests">0</div>
+                <div class="stat-label">Toplam Test</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="successTests">0</div>
+                <div class="stat-label">Başarılı</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="failedTests">0</div>
+                <div class="stat-label">Başarısız</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAmount">0₺</div>
+                <div class="stat-label">Toplam Miktar</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <div class="debug-title">🎮 Test Butonları</div>
+        <div class="test-buttons">
+            <button class="test-btn" onclick="openMainApp()">🏠 Ana Uygulamayı Aç</button>
+            <button class="test-btn" onclick="simulatePayment(500, 'TRY')">💰 500₺ Test Ödeme</button>
+            <button class="test-btn" onclick="simulatePayment(100, 'EUR')">💶 100€ Test Ödeme</button>
+            <button class="test-btn" onclick="simulateGoldPayment('gram')">🏅 Gram Altın Test</button>
+            <button class="test-btn" onclick="simulateError()">❌ Hata Simülasyonu</button>
+            <button class="test-btn" onclick="clearLogs()">🗑️ Logları Temizle</button>
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <div class="debug-title">📝 Canlı Loglar</div>
+        <div id="logContainer">
+            <div class="log-entry log-success">✅ Debug panel başlatıldı</div>
+        </div>
+    </div>
+
+    <script>
+        let stats = {
+            total: 0,
+            success: 0,
+            failed: 0,
+            totalAmount: 0
+        };
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // En fazla 50 log tut
+            if (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalTests').textContent = stats.total;
+            document.getElementById('successTests').textContent = stats.success;
+            document.getElementById('failedTests').textContent = stats.failed;
+            document.getElementById('totalAmount').textContent = stats.totalAmount + '₺';
+        }
+
+        function openMainApp() {
+            window.open('index.html', '_blank');
+            addLog('🏠 Ana uygulama açıldı', 'info');
+        }
+
+        function simulatePayment(amount, currency) {
+            stats.total++;
+            addLog(`💳 ${amount} ${currency} test ödeme başlatıldı`, 'info');
+            
+            // Rastgele başarı/başarısızlık simülasyonu
+            setTimeout(() => {
+                const isSuccess = Math.random() > 0.2; // %80 başarı oranı
+                
+                if (isSuccess) {
+                    stats.success++;
+                    if (currency === 'TRY') {
+                        stats.totalAmount += amount;
+                    } else if (currency === 'EUR') {
+                        stats.totalAmount += amount * 32; // Örnek kur
+                    }
+                    addLog(`✅ ${amount} ${currency} ödeme başarılı!`, 'success');
+                } else {
+                    stats.failed++;
+                    addLog(`❌ ${amount} ${currency} ödeme başarısız!`, 'error');
+                }
+                
+                updateStats();
+            }, Math.random() * 2000 + 1000); // 1-3 saniye arası
+        }
+
+        function simulateGoldPayment(goldType) {
+            stats.total++;
+            const goldNames = {
+                'gram': 'Gram Altın',
+                'ceyrek': 'Çeyrek Altın', 
+                'trabzon': 'Trabzon Burması',
+                'yarim': 'Yarım Gram'
+            };
+            
+            addLog(`🏅 ${goldNames[goldType]} test ödeme başlatıldı`, 'info');
+            
+            setTimeout(() => {
+                const isSuccess = Math.random() > 0.1; // %90 başarı oranı
+                
+                if (isSuccess) {
+                    stats.success++;
+                    stats.totalAmount += 1800; // Örnek altın fiyatı
+                    addLog(`✅ ${goldNames[goldType]} ödeme başarılı!`, 'success');
+                } else {
+                    stats.failed++;
+                    addLog(`❌ ${goldNames[goldType]} ödeme başarısız!`, 'error');
+                }
+                
+                updateStats();
+            }, Math.random() * 2000 + 1500);
+        }
+
+        function simulateError() {
+            stats.total++;
+            stats.failed++;
+            addLog('⚠️ Test hata simülasyonu tetiklendi', 'warning');
+            addLog('❌ Ödeme işlemi başarısız: Test error', 'error');
+            updateStats();
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = 
+                '<div class="log-entry log-success">✅ Loglar temizlendi</div>';
+            addLog('🗑️ Debug logları temizlendi', 'info');
+        }
+
+        // Ana uygulamadan gelen mesajları dinle
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'payment_test') {
+                addLog(`📨 Ana uygulamadan mesaj: ${event.data.message}`, 'info');
+            }
+        });
+
+        // Sayfa yüklendiğinde
+        window.addEventListener('load', function() {
+            addLog('🚀 Test debug panel hazır', 'success');
+            updateStats();
+            
+            // 5 saniye sonra örnek test başlat
+            setTimeout(() => {
+                addLog('🎯 Otomatik test senaryosu başlatılıyor...', 'warning');
+                simulatePayment(250, 'TRY');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

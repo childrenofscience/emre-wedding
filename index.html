@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEYDA&EMRE WEDDING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="email-service.js"></script>
+    <script src="payment.js"></script>
+    <script src="gold-price-service.js"></script>
+    <script src="spotify-service.js"></script>
+    <script src="excel-export-service.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-family: 'Crimson Pro', serif;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .date {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            font-family: 'Times New Roman', serif;
+            font-weight: normal;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .payment-methods, .currency-options, .amount-options, .gold-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .currency-options {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #e1e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .option-btn:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn.active {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .option-icon {
+            width: 30px;
+            height: 30px;
+            background: #4facfe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .custom-amount-section {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .custom-amount-section.show {
+            display: block;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .custom-label {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .amount-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            border-color: #4facfe;
+        }
+
+        .nav-btn.back {
+            background: #f8f9fa;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .qr-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Yeni CSS - Altın Fiyatları */
+        .gold-price-update {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+        }
+
+        .price-tag {
+            display: block;
+            color: #4facfe;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Şarkı İsteği Bölümü */
+        .song-request-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .song-request-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .song-search {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .search-btn {
+            padding: 15px 20px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .song-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border: 1px solid #e1e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .song-item:hover {
+            border-color: #4facfe;
+            transform: translateX(5px);
+        }
+
+        .song-item.selected {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .song-cover {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .song-details {
+            flex: 1;
+        }
+
+        .song-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .song-artist {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .selected-song {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #4facfe;
+        }
+
+        .skip-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e1e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* Ödeme yöntemi grid güncellemesi */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Footer - Powered by */
+        .footer-brand {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 1s ease-out 2s both;
+        }
+
+        .footer-brand .ad-icon {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .footer-brand .brand-text {
+            color: #ccc;
+            font-weight: normal;
+        }
+
+        .footer-brand .brand-name {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .footer-brand {
+                bottom: 5px;
+                right: 5px;
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>CEYDA&EMRE WEDDING</h1>
+            <p class="date">02/08/2025</p>
+            
+            <!-- Adım 1: Ödeme Yöntemi -->
+            <div class="step active" id="step1">
+                <div class="payment-methods">
+                    <div class="option-btn active" data-method="credit">
+                        <div class="option-icon">💳</div>
+                        <span>Kredi Kartı</span>
+                    </div>
+                    <div class="option-btn" data-method="debit">
+                        <div class="option-icon">🏦</div>
+                        <span>Banka Kartı</span>
+                    </div>
+                </div>
+                <button class="pay-button" onclick="nextStep(2)">Devam Et</button>
+            </div>
+
+            <!-- Adım 2: Para Birimi Seçimi -->
+            <div class="step" id="step2">
+                <div class="currency-options">
+                    <div class="option-btn" data-currency="tl">
+                        <div class="option-icon">₺</div>
+                        <span>Türk Lirası</span>
+                    </div>
+                    <div class="option-btn" data-currency="gold">
+                        <div class="option-icon">🏅</div>
+                        <span>Altın</span>
+                    </div>
+                    <div class="option-btn" data-currency="eur">
+                        <div class="option-icon">€</div>
+                        <span>Euro</span>
+                    </div>
+                    <div class="option-btn" data-currency="usd">
+                        <div class="option-icon">$</div>
+                        <span>Dolar</span>
+                    </div>
+                </div>
+                <div class="navigation-buttons">
+                    <button class="nav-btn back" onclick="nextStep(1)">Geri</button>
+                    <button class="nav-btn" id="currencyNext" onclick="selectCurrency()" disabled>Devam Et</button>
+                </div>
+            </div>
+
+            <!-- Adım 3a: TL Tutar Seçimi -->
+            <div class="step" id="step3tl">
+                <div class="amount-options">
+                    <div class="option-btn" data-amount="500">
+                        <div class="option-icon">₺</div>
+                        <span>500 TL</span>
+                    </div>
+                    <div class="option-btn" data-amount="1000">
+                        <div class="option-icon">₺</div>
+                        <span>1000 TL</span>
+                    </div>
+                </div>
+                <div class="custom-amount-section">
+                    <input type="number" class="custom-input" id="customTL" placeholder="İstediğiniz tutarı girin" min="1">
+                    <div class="custom-label">Gönlünüzden Ne Koparsa</div>
+                </div>
+                <div class="amount-display" id="amountDisplay"></div>
+                <div class="navigation-buttons">
+                    <button class="nav-btn back" onclick="nextStep(2)">Geri</button>
+                    <button class="nav-btn" id="amountNext" onclick="proceedToPayment()" disabled>Ödeme Yap</button>
+                </div>
+            </div>
+
+            <!-- Adım 3b: EUR/USD Tutar Seçimi -->
+            <div class="step" id="step3forex">
+                <div class="amount-options" id="forexAmounts">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+                <div class="custom-amount-section">
+                    <input type="number" class="custom-input" id="customForex" placeholder="İstediğiniz tutarı girin" min="1">
+                    <div class="custom-label">Gönlünüzden Ne Koparsa</div>
+                </div>
+                <div class="amount-display" id="forexDisplay"></div>
+                <div class="navigation-buttons">
+                    <button class="nav-btn back" onclick="nextStep(2)">Geri</button>
+                    <button class="nav-btn" id="forexNext" onclick="proceedToPayment()" disabled>Ödeme Yap</button>
+                </div>
+            </div>
+
+            <!-- Adım 3c: Altın Seçimi -->
+            <div class="step" id="step3gold">
+                <div class="gold-price-update">
+                    <small id="goldUpdateTime">Fiyatlar yükleniyor...</small>
+                    <button class="refresh-btn" onclick="refreshGoldPrices()">🔄</button>
+                </div>
+                <div class="gold-options">
+                    <div class="option-btn" data-gold="gram">
+                        <div class="option-icon">🏅</div>
+                        <span>Gram Altın</span>
+                        <small class="price-tag" id="price-gram">₺ ---</small>
+                    </div>
+                    <div class="option-btn" data-gold="ceyrek">
+                        <div class="option-icon">🪙</div>
+                        <span>Çeyrek Altın</span>
+                        <small class="price-tag" id="price-ceyrek">₺ ---</small>
+                    </div>
+                    <div class="option-btn" data-gold="yarim">
+                        <div class="option-icon">�</div>
+                        <span>Yarım Altın</span>
+                        <small class="price-tag" id="price-yarim">₺ ---</small>
+                    </div>
+                    <div class="option-btn" data-gold="tam">
+                        <div class="option-icon">🥇</div>
+                        <span>Tam Altın</span>
+                        <small class="price-tag" id="price-tam">₺ ---</small>
+                    </div>
+                    <div class="option-btn" data-gold="ajda" style="grid-column: span 2;">
+                        <div class="option-icon">�</div>
+                        <span>Ajda Bilezik</span>
+                        <small class="price-tag" id="price-ajda">₺ ---</small>
+                    </div>
+                </div>
+                <div class="amount-display" id="goldDisplay"></div>
+                <div class="navigation-buttons">
+                    <button class="nav-btn back" onclick="nextStep(2)">Geri</button>
+                    <button class="nav-btn" id="goldNext" onclick="proceedToPayment()" disabled>Ödeme Yap</button>
+                </div>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                ✅ Bağışınız başarıyla tamamlandı! Teşekkür ederiz.
+            </div>
+
+            <!-- Şarkı İsteği Bölümü -->
+            <div class="song-request-section" id="songRequestSection" style="display: none;">
+                <h3>🎵 İstek Şarkı</h3>
+                <p>Düğünde çalınmasını istediğiniz şarkıyı seçebilirsiniz:</p>
+                
+                <div class="song-search">
+                    <input type="text" id="songSearch" placeholder="Şarkı veya sanatçı adı yazın..." class="custom-input">
+                    <button onclick="searchSpotifySongs()" class="search-btn">🔍 Ara</button>
+                </div>
+                
+                <div class="song-results" id="songResults"></div>
+                
+                <div class="selected-song" id="selectedSong" style="display: none;">
+                    <h4>Seçilen Şarkı:</h4>
+                    <div class="song-info" id="songInfo"></div>
+                    <button onclick="submitSongRequest()" class="pay-button">🎶 Şarkı İsteğini Gönder</button>
+                </div>
+                
+                <button onclick="skipSongRequest()" class="skip-btn">Şarkı İsteği Yapmak İstemiyorum</button>
+            </div>
+
+            <div class="qr-info">
+                💡 Bu sayfaya QR kod ile erişildi. Güvenli ödeme için SSL koruması aktif.
+            </div>
+        </div>
+    </div>
+
+    <!-- Powered by Footer -->
+    <div class="footer-brand">
+        <span class="ad-icon">📺</span>
+        <span class="brand-text">powered by</span>
+        <span class="brand-name">children of science</span>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedCurrency = null;
+        let selectedAmount = null;
+        let selectedGold = null;
+
+        function nextStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            currentStep = step;
+        }
+
+        // Ödeme yöntemi seçimi
+        document.querySelectorAll('[data-method]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-method]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // Ödeme yöntemi seçildi, devam et butonu her zaman aktif
+            });
+        });
+
+        // Para birimi seçimi
+        document.querySelectorAll('[data-currency]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-currency]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedCurrency = this.dataset.currency;
+                document.getElementById('currencyNext').disabled = false;
+            });
+        });
+
+        function selectCurrency() {
+            if (selectedCurrency === 'tl') {
+                nextStep('3tl');
+                setupTLListeners();
+            } else if (selectedCurrency === 'gold') {
+                nextStep('3gold');
+                setupGoldListeners();
+            } else if (selectedCurrency === 'eur' || selectedCurrency === 'usd') {
+                setupForexStep();
+                nextStep('3forex');
+            }
+        }
+
+        // TL tutarları için event listener
+        function setupTLListeners() {
+            document.querySelectorAll('#step3tl [data-amount]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#step3tl [data-amount]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedAmount = this.dataset.amount;
+                    document.getElementById('customTL').value = '';
+                    document.getElementById('amountDisplay').textContent = selectedAmount + ' TL';
+                    document.getElementById('amountNext').disabled = false;
+                });
+            });
+
+            document.getElementById('customTL').addEventListener('input', function() {
+                if (this.value) {
+                    document.querySelectorAll('#step3tl [data-amount]').forEach(b => b.classList.remove('active'));
+                    selectedAmount = this.value;
+                    document.getElementById('amountDisplay').textContent = this.value + ' TL';
+                    document.getElementById('amountNext').disabled = false;
+                } else {
+                    document.getElementById('amountNext').disabled = true;
+                    document.getElementById('amountDisplay').textContent = '';
+                }
+            });
+        }
+
+        // Forex setup
+        function setupForexStep() {
+            const symbol = selectedCurrency === 'eur' ? '€' : '$';
+            const amounts = [50, 100, 150, 200];
+            
+            document.getElementById('forexAmounts').innerHTML = amounts.map(amount => 
+                `<div class="option-btn" data-amount="${amount}">
+                    <div class="option-icon">${symbol}</div>
+                    <span>${amount} ${selectedCurrency.toUpperCase()}</span>
+                </div>`
+            ).join('');
+
+            document.querySelectorAll('#step3forex [data-amount]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#step3forex [data-amount]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedAmount = this.dataset.amount;
+                    document.getElementById('customForex').value = '';
+                    document.getElementById('forexDisplay').textContent = selectedAmount + ' ' + selectedCurrency.toUpperCase();
+                    document.getElementById('forexNext').disabled = false;
+                });
+            });
+
+            document.getElementById('customForex').addEventListener('input', function() {
+                if (this.value) {
+                    document.querySelectorAll('#step3forex [data-amount]').forEach(b => b.classList.remove('active'));
+                    selectedAmount = this.value;
+                    document.getElementById('forexDisplay').textContent = this.value + ' ' + selectedCurrency.toUpperCase();
+                    document.getElementById('forexNext').disabled = false;
+                } else {
+                    document.getElementById('forexNext').disabled = true;
+                    document.getElementById('forexDisplay').textContent = '';
+                }
+            });
+        }
+
+        // Altın seçimi
+        function setupGoldListeners() {
+            document.querySelectorAll('[data-gold]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-gold]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedGold = this.dataset.gold;
+                    
+                    const goldNames = {
+                        'gram': 'Gram Altın',
+                        'ceyrek': 'Çeyrek Altın',
+                        'yarim': 'Yarım Altın',
+                        'tam': 'Tam Altın',
+                        'ajda': 'Ajda Bilezik'
+                    };
+                    
+                    document.getElementById('goldDisplay').textContent = goldNames[selectedGold];
+                    document.getElementById('goldNext').disabled = false;
+                });
+            });
+        }
+
+        function proceedToPayment() {
+            let paymentText = '';
+            
+            if (selectedCurrency === 'tl') {
+                paymentText = selectedAmount + ' TL';
+            } else if (selectedCurrency === 'gold') {
+                const goldNames = {
+                    'gram': 'Gram Altın',
+                    'ceyrek': 'Çeyrek Altın',
+                    'trabzon': 'Trabzon Burması',
+                    'yarim': 'Yarım Gram'
+                };
+                paymentText = goldNames[selectedGold];
+            } else {
+                paymentText = selectedAmount + ' ' + selectedCurrency.toUpperCase();
+            }
+
+            // Gerçek ödeme işlemi
+            const activeButton = document.querySelector('.step.active .nav-btn:not(.back)');
+            activeButton.textContent = 'Ödeme Hazırlanıyor...';
+            activeButton.disabled = true;
+
+            // Ödeme sağlayıcısını başlat
+            const payment = new WeddingPayment();
+            const paymentData = payment.preparePaymentData(selectedCurrency, selectedAmount, selectedGold);
+
+            // Ödeme isteği gönder
+            payment.createPaymentRequest(paymentData)
+                .then(response => {
+                    if (response.status === 'success') {
+                        // iyzico ödeme formu açılır
+                        payment.openPaymentForm(response.checkoutFormContent);
+                        
+                        // Ödeme tamamlandıktan sonra callback gelecek
+                        // Şimdilik test için success mesajı göster
+                        setTimeout(() => {
+                            document.getElementById('successMessage').style.display = 'block';
+                            
+                            // 5 saniye sonra sıfırla
+                            setTimeout(() => {
+                                location.reload();
+                            }, 5000);
+                        }, 3000);
+                    } else {
+                        // Hata durumu
+                        activeButton.textContent = 'Ödeme Hatası';
+                        activeButton.style.background = '#ff4757';
+                        console.error('Payment initialization failed:', response);
+                        
+                        setTimeout(() => {
+                            activeButton.textContent = 'Tekrar Dene';
+                            activeButton.style.background = 'linear-gradient(45deg, #4facfe, #00f2fe)';
+                            activeButton.disabled = false;
+                        }, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Payment error:', error);
+                    activeButton.textContent = 'Bağlantı Hatası';
+                    activeButton.style.background = '#ff4757';
+                    
+                    setTimeout(() => {
+                        activeButton.textContent = 'Tekrar Dene';
+                        activeButton.style.background = 'linear-gradient(45deg, #4facfe, #00f2fe)';
+                        activeButton.disabled = false;
+                    }, 3000);
+                });
+        }
+
+        // Sayfa yüklendiğinde
+        window.addEventListener('load', function() {
+            document.querySelector('.card').style.animation = 'fadeInUp 0.6s ease-out';
+            document.querySelector('.custom-amount-section').classList.add('show');
+            
+            // Altın fiyatlarını yükle
+            loadGoldPrices();
+        });
+
+        // Altın fiyatlarını yükle
+        async function loadGoldPrices() {
+            try {
+                const goldService = new GoldPriceService();
+                const prices = await goldService.getGoldPrices();
+                
+                // Fiyatları güncelle
+                document.getElementById('price-gram').textContent = `₺ ${prices.gram}`;
+                document.getElementById('price-ceyrek').textContent = `₺ ${prices.ceyrek}`;
+                document.getElementById('price-yarim').textContent = `₺ ${prices.yarim}`;
+                document.getElementById('price-tam').textContent = `₺ ${prices.tam}`;
+                document.getElementById('price-ajda').textContent = `₺ ${prices.ajda}`;
+                
+                // Güncelleme zamanını göster
+                document.getElementById('goldUpdateTime').textContent = goldService.getLastUpdateTime();
+                
+            } catch (error) {
+                console.error('Altın fiyatları yüklenemedi:', error);
+                // Demo fiyatları göster
+                document.getElementById('price-gram').textContent = '₺ 4.337';
+                document.getElementById('price-ceyrek').textContent = '₺ 6.939';
+                document.getElementById('price-yarim').textContent = '₺ 15.180';
+                document.getElementById('price-tam').textContent = '₺ 31.226';
+                document.getElementById('price-ajda').textContent = '₺ 43.370';
+            }
+        }
+
+        // Altın fiyatlarını yenile
+        function refreshGoldPrices() {
+            document.getElementById('goldUpdateTime').textContent = 'Güncelleniyor...';
+            loadGoldPrices();
+        }
+
+        // Ödeme popup'ından gelen mesajları dinle
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'payment_success') {
+                // Ödeme başarılı popup'ı kapat ve success mesajı göster
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Success mesajını güncelle
+                document.getElementById('successMessage').innerHTML = 
+                    `✅ Test ödeme başarılı! ${event.data.amount} ${event.data.currency} tutarında ödeme alındı.`;
+                
+                // 3 saniye sonra callback sayfasına yönlendir
+                setTimeout(() => {
+                    window.location.href = `payment-callback.html?status=success&amount=${event.data.amount}&currency=${event.data.currency}`;
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

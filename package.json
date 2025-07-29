@@ -1,0 +1,51 @@
+{
+  "name": "ceyda-emre-wedding-gift-app",
+  "version": "1.0.0",
+  "description": "Ceyda ve Emre'nin düğünü için hediye toplama web uygulaması - iyzico entegrasyonlu",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server .",
+    "build": "echo 'Build completed - static files ready'",
+    "preview": "start index.html",
+    "test-payment": "echo 'Test ödeme URL: http://localhost:3000' && npx serve .",
+    "setup": "echo 'Kurulum talimatları için PAYMENT_SETUP.md dosyasını okuyun'"
+  },
+  "keywords": [
+    "wedding",
+    "gift",
+    "payment",
+    "donation",
+    "iyzico",
+    "türkiye",
+    "responsive",
+    "e-commerce"
+  ],
+  "author": "Wedding App Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "wedding-payment-app"
+  },
+  "payment": {
+    "provider": "iyzico",
+    "environment": "sandbox",
+    "supportedCurrencies": ["TRY", "EUR", "USD"],
+    "supportedMethods": ["credit_card", "debit_card"]
+  }
+}

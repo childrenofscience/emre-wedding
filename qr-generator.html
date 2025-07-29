@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kod - CEYDA&EMRE WEDDING</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .qr-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .wedding-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .wedding-date {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .qr-code {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 3px dashed #4facfe;
+        }
+
+        .qr-image {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .share-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: white;
+        }
+
+        .copy-btn {
+            background: #4facfe;
+            color: white;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-brand {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .ad-icon {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .brand-text {
+            color: #ccc;
+        }
+
+        .brand-name {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .qr-container {
+                padding: 20px;
+            }
+            .qr-image {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <h1 class="wedding-title">CEYDA&EMRE WEDDING</h1>
+        <p class="wedding-date">02/08/2025</p>
+        
+        <div class="qr-code">
+            <div class="qr-image" id="qrcode"></div>
+        </div>
+
+        <div class="instructions">
+            <strong>📱 Nasıl Kullanılır:</strong><br>
+            1. Telefon kameranızı QR koda tutun<br>
+            2. Çıkan bildirime dokunun<br>
+            3. Düğün hediye sayfası açılacak<br>
+            4. Ödemenizi güvenle yapabilirsiniz
+        </div>
+
+        <div class="share-buttons">
+            <button class="share-btn whatsapp-btn" onclick="shareWhatsApp()">
+                📱 WhatsApp
+            </button>
+            <button class="share-btn copy-btn" onclick="copyLink()">
+                📋 Linki Kopyala
+            </button>
+        </div>
+    </div>
+
+    <!-- Powered by Footer -->
+    <div class="footer-brand">
+        <span class="ad-icon">📺</span>
+        <span class="brand-text">powered by</span>
+        <span class="brand-name">children of science</span>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
+    <script>
+        // Site URL'i oluştur
+        const siteUrl = window.location.origin + window.location.pathname.replace('qr-generator.html', 'index.html');
+        
+        // QR Kod oluştur
+        function generateQRCode() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            QRCode.toCanvas(canvas, siteUrl, {
+                width: 200,
+                height: 200,
+                color: {
+                    dark: '#333333',
+                    light: '#FFFFFF'
+                },
+                margin: 2,
+                errorCorrectionLevel: 'M'
+            }, function (error) {
+                if (error) {
+                    console.error('QR Kod hatası:', error);
+                    // Fallback - QR kod servisi kullan
+                    createFallbackQR();
+                } else {
+                    document.getElementById('qrcode').appendChild(canvas);
+                    console.log('✅ QR Kod oluşturuldu:', siteUrl);
+                }
+            });
+        }
+
+        // Fallback QR kod (online servis)
+        function createFallbackQR() {
+            const qrContainer = document.getElementById('qrcode');
+            const img = document.createElement('img');
+            
+            // Google Charts QR API kullan
+            const encodedUrl = encodeURIComponent(siteUrl);
+            img.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}&format=png&margin=2`;
+            img.alt = 'QR Kod - Wedding Payment';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.borderRadius = '10px';
+            
+            qrContainer.appendChild(img);
+            console.log('✅ Fallback QR Kod oluşturuldu');
+        }
+
+        // WhatsApp ile paylaş
+        function shareWhatsApp() {
+            const message = `🎊 CEYDA&EMRE DÜÜÜNEİ! 🎊\n\n💒 Tarih: 02/08/2025\n\n🎁 Düğün hediyenizi güvenle verebilirsiniz:\n${siteUrl}\n\n📱 QR kodu okutarak da erişebilirsiniz!`;
+            
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            console.log('📱 WhatsApp paylaşımı açıldı');
+        }
+
+        // Linki kopyala
+        function copyLink() {
+            navigator.clipboard.writeText(siteUrl).then(function() {
+                // Başarı mesajı göster
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅ Kopyalandı!';
+                copyBtn.style.background = '#2ed573';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = '#4facfe';
+                }, 2000);
+                
+                console.log('📋 Link kopyalandı:', siteUrl);
+            }).catch(function(err) {
+                console.error('Kopyalama hatası:', err);
+                // Fallback - manuel seçim
+                prompt('Linki kopyalayın:', siteUrl);
+            });
+        }
+
+        // Ana uygulamayı aç
+        function openMainApp() {
+            window.open('index.html', '_blank');
+        }
+
+        // Sayfa yüklendiğinde QR kodu oluştur
+        window.addEventListener('load', function() {
+            generateQRCode();
+            
+            console.log('🎯 QR Generator hazır');
+            console.log('📍 Site URL:', siteUrl);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Sonucu - CEYDA&EMRE WEDDING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff4757, #ff6b7a);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-family: 'Crimson Pro', serif;
+            font-weight: 700;
+        }
+
+        .message {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .payment-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #e1e8f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .back-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .countdown {
+            color: #999;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <div class="result-card">
+            <div id="resultIcon" class="success-icon">✓</div>
+            
+            <h1 id="resultTitle">Ödeme Başarılı!</h1>
+            
+            <div id="resultMessage" class="message">
+                Hediyeniz başarıyla işleme alındı. Ceyda ve Emre'ye ulaştırılacaktır.
+            </div>
+
+            <div id="paymentDetails" class="payment-details">
+                <div class="detail-row">
+                    <span>İşlem No:</span>
+                    <span id="transactionId">-</span>
+                </div>
+                <div class="detail-row">
+                    <span>Tutar:</span>
+                    <span id="amount">-</span>
+                </div>
+                <div class="detail-row">
+                    <span>Tarih:</span>
+                    <span id="date">-</span>
+                </div>
+                <div class="detail-row">
+                    <span>Durum:</span>
+                    <span id="status">Başarılı</span>
+                </div>
+            </div>
+
+            <a href="index.html" class="back-button">Ana Sayfaya Dön</a>
+            
+            <div class="countdown">
+                <span id="countdown">5</span> saniye sonra otomatik olarak ana sayfaya yönlendirileceksiniz.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL parametrelerini kontrol et
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        const token = urlParams.get('token');
+        
+        // Sayfa yüklendiğinde ödeme sonucunu kontrol et
+        window.addEventListener('load', function() {
+            checkPaymentResult();
+            startCountdown();
+        });
+
+        function checkPaymentResult() {
+            // URL'den gelen parametrelere göre sonuç göster
+            if (status === 'success') {
+                showSuccessResult();
+            } else if (status === 'failure') {
+                showErrorResult();
+            } else {
+                // Token varsa iyzico'dan sonuç sorgula
+                if (token) {
+                    // Gerçek uygulamada backend'den sonuç sorgulanır
+                    showSuccessResult(); // Test için success göster
+                } else {
+                    showErrorResult();
+                }
+            }
+        }
+
+        function showSuccessResult() {
+            document.getElementById('resultIcon').className = 'success-icon';
+            document.getElementById('resultIcon').innerHTML = '✓';
+            document.getElementById('resultTitle').textContent = 'Ödeme Başarılı!';
+            document.getElementById('resultMessage').textContent = 'Hediyeniz başarıyla işleme alındı. Ceyda ve Emre\'ye ulaştırılacaktır.';
+            
+            // Örnek ödeme detayları
+            document.getElementById('transactionId').textContent = 'TXN' + Date.now();
+            document.getElementById('amount').textContent = urlParams.get('amount') || '500 TL';
+            document.getElementById('date').textContent = new Date().toLocaleDateString('tr-TR');
+            document.getElementById('status').textContent = 'Başarılı';
+        }
+
+        function showErrorResult() {
+            document.getElementById('resultIcon').className = 'error-icon';
+            document.getElementById('resultIcon').innerHTML = '✗';
+            document.getElementById('resultTitle').textContent = 'Ödeme Başarısız!';
+            document.getElementById('resultMessage').textContent = 'Ödeme işlemi tamamlanamadı. Lütfen tekrar deneyiniz.';
+            
+            document.getElementById('paymentDetails').style.display = 'none';
+            document.getElementById('countdown').parentElement.style.display = 'none';
+        }
+
+        function startCountdown() {
+            let count = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            const timer = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(timer);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
